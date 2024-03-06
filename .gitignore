@@ -1,0 +1,6 @@
+node_modules
+*.m4a
+*.env
+*.mp3
+*.txt
+package-lock.json

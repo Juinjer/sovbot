@@ -10,17 +10,33 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
+const plMap = new Map([
+    ["mattie", ["./mattie.m4a"]],
+    ["me", []],
+    ["quint",  ["./soviet.mp3","./privyet_quint.m4a"]],
+    ["dimi", []]
+]);
+
+const idmap = new Map([
+    ["218489168873914368", "mattie"],
+    ["231815279506620417", "me"],
+    ["220514388396867585", "quint"],
+    ["243807709055418368", "dimi"]
+    ]);
+
 let connection = null;
+let elapsed = true;
 
 const player = createAudioPlayer();
-let playlist = ["./soviet.mp3","./privyet_quint.m4a"];
+let playlist = [];
 
-function resetQueue() {
-    playlist = ["./soviet.mp3","./privyet_quint.m4a"];
-}
-
-function getNextSong() {
-    setInterval(() => { resetQueue() }, 3e6);
+function getNextSong(user) {
+    if (user) {
+        playlist = plMap.get(user).slice(); // issue where plMap is overridden for some reason
+    }
+    if (playlist.length === 0) return;
+    elapsed = false;
+    setTimeout(() => { elapsed = true }, 3e6);
     console.log(playlist);
     return playlist.pop();
 }
@@ -45,12 +61,14 @@ async function connectVC(channel) {
     }
 }
 client.on("voiceStateUpdate", async (oldState, newState) => {
-    
-    if (newState.id == 218489168873914368 && newState.channelId !== null && playlist.length > 0) {
+    // console.log(idmap, idmap.has(newState.id), newState.channelId !== null, newState.channelId, newState.id.toString());
+    if (idmap.has(newState.id.toString()) && newState.channelId !== null && elapsed && plMap.get(idmap.get(newState.id)).length > 0){
+        console.log("test");
         try{
             const connection = await connectVC(newState.channel);
             connection.subscribe(player);
-            playAudio(getNextSong());
+
+            playAudio(getNextSong(idmap.get(newState.id)));
         }
         catch (error) {
             console.error(error);
@@ -59,7 +77,7 @@ client.on("voiceStateUpdate", async (oldState, newState) => {
 });
 
 player.on(AudioPlayerStatus.Idle, () => {
-    let next = getNextSong();
+    let next = getNextSong(null);
     if (!next) {
         connection.destroy();
         connection = null;

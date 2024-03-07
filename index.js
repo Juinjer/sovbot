@@ -12,7 +12,7 @@ client.on("ready", () => {
 
 const plMap = new Map([
     ["mattie", ["./mattie.m4a"]],
-    ["me", []],
+    ["me", ["./privyet_quint.m4a"]],
     ["quint",  ["./soviet.mp3","./privyet_quint.m4a"]],
     ["dimi", []]
 ]);
@@ -61,8 +61,7 @@ async function connectVC(channel) {
     }
 }
 client.on("voiceStateUpdate", async (oldState, newState) => {
-    // console.log(idmap, idmap.has(newState.id), newState.channelId !== null, newState.channelId, newState.id.toString());
-    if (idmap.has(newState.id.toString()) && newState.channelId !== null && elapsed && plMap.get(idmap.get(newState.id)).length > 0){
+    if (idmap.has(newState.id.toString()) && newState.channelId !== null && oldState.channelId === null && elapsed && plMap.get(idmap.get(newState.id)).length > 0){
         console.log("test");
         try{
             const connection = await connectVC(newState.channel);

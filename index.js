@@ -2,6 +2,7 @@ import {Client, GatewayIntentBits} from "discord.js";
 import dotenv from "dotenv";
 
 import { AudioPlayerStatus, createAudioPlayer, createAudioResource, entersState, joinVoiceChannel,getVoiceConnection } from "@discordjs/voice";
+// import fs from "fs";
 
 dotenv.config();
 
@@ -10,19 +11,10 @@ client.on("ready", () => {
     console.log(`Logged in as ${client.user.tag}`);
 });
 
-const plMap = new Map([
-    ["mattie", ["./mattie.m4a"]],
-    ["me", ["./privyet_quint.m4a"]],
-    ["quint",  ["./soviet.mp3","./privyet_quint.m4a"]],
-    ["dimi", []]
-]);
+import config from "./config.json" assert { type: "json"};
+const plMap = new Map(Object.entries(config["members"]));
 
-const idmap = new Map([
-    ["220514388396867585", "mattie"],
-    ["231815279506620417", "me"],
-    ["218489168873914368", "quint"],
-    ["243807709055418368", "dimi"]
-    ]);
+const idmap = new Map(Object.entries(config["ids"]));
 
 let connection = null;
 let elapsed = true;

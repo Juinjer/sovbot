@@ -4,3 +4,4 @@ node_modules
 *.mp3
 *.txt
 package-lock.json
+config.json
